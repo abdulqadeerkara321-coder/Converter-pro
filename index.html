@@ -1,0 +1,24 @@
+<!doctype html><html lang="ps" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Converter Pro 4</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#152033;font-family:Arial,sans-serif}.wrap{max-width:1100px;margin:auto;padding:18px}.hero{padding:30px;border-radius:24px;background:linear-gradient(135deg,#172554,#2563eb);color:#fff;margin-bottom:18px}.hero h1{margin:0 0 8px;font-size:34px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px}.card{background:#fff;padding:20px;border-radius:18px;box-shadow:0 5px 20px #0001}.card h2{margin:0 0 8px;font-size:20px}.muted{color:#64748b;font-size:14px}input,select,button{width:100%;padding:11px;margin-top:8px;border:1px solid #d6dce6;border-radius:10px;font-size:15px}button{background:#2563eb;color:white;border:0;font-weight:bold;cursor:pointer}.status{margin-top:10px}.download{display:inline-block;margin-top:8px;color:#2563eb;font-weight:bold}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}@media(max-width:600px){.hero h1{font-size:27px}}
+</style></head><body><main class="wrap"><section class="hero"><h1>Converter Pro</h1><div>PDF، Word، Excel، PowerPoint، عکس، ویډیو او آډیو — په یوه ځای کې</div></section>
+<section class="grid">
+<div class="card"><h2>📄 PDF → Word</h2><p class="muted">د LibreOffice له لارې.</p><input id="pw" type="file" accept=".pdf"><button onclick="office('pdf-word','pw','pws')">Convert</button><div id="pws" class="status"></div></div>
+<div class="card"><h2>📝 Word → PDF</h2><input id="wp" type="file" accept=".doc,.docx"><button onclick="office('word-pdf','wp','wps')">Convert</button><div id="wps" class="status"></div></div>
+<div class="card"><h2>📊 Excel → PDF</h2><input id="ep" type="file" accept=".xls,.xlsx"><button onclick="office('excel-pdf','ep','eps')">Convert</button><div id="eps" class="status"></div></div>
+<div class="card"><h2>📽️ PowerPoint → PDF</h2><input id="pp" type="file" accept=".ppt,.pptx"><button onclick="office('ppt-pdf','pp','pps')">Convert</button><div id="pps" class="status"></div></div>
+<div class="card"><h2>🎬 Video → MP3</h2><input id="vm" type="file" accept="video/*"><button onclick="media('video-mp3','vm','vms')">Convert</button><div id="vms" class="status"></div></div>
+<div class="card"><h2>🎬 Video → WAV</h2><input id="vw" type="file" accept="video/*"><button onclick="media('video-wav','vw','vws')">Convert</button><div id="vws" class="status"></div></div>
+<div class="card"><h2>🎵 Audio → MP3</h2><input id="am" type="file" accept="audio/*"><button onclick="media('audio-mp3','am','ams')">Convert</button><div id="ams" class="status"></div></div>
+<div class="card"><h2>🖼️ Image Converter</h2><input id="im" type="file" accept="image/*"><div class="row"><select id="if"><option value="png">PNG</option><option value="jpeg">JPG</option><option value="webp">WEBP</option></select><input id="iq" type="number" min="1" max="100" value="85"></div><button onclick="imageConvert()">Convert</button><div id="ims" class="status"></div></div>
+<div class="card"><h2>📚 Merge PDF</h2><input id="mg" type="file" accept="application/pdf" multiple><button onclick="merge()">Merge</button><div id="mgs" class="status"></div></div>
+<div class="card"><h2>🔤 OCR</h2><p class="muted">له عکس څخه متن راوباسئ.</p><input id="ocr" type="file" accept="image/*,.pdf"><select id="lang"><option value="eng">English</option><option value="ara">Arabic</option><option value="fas">Persian</option></select><button onclick="doOCR()">Extract Text</button><div id="ocrs" class="status"></div></div>
+</section></main>
+<script>
+async function send(url,d,s){s.innerHTML="⏳ کار روان دی...";try{let r=await fetch(url,{method:"POST",body:d}),j=await r.json();if(!r.ok)throw Error(j.error||"Error");s.innerHTML=`✅ بشپړ شو — <a class="download" href="${j.download}">فایل ښکته کړئ</a>`}catch(e){s.textContent="❌ "+e.message}}
+function office(type,id,s){let f=document.getElementById(id).files[0];if(!f)return alert("فایل وټاکئ");let d=new FormData();d.append("file",f);d.append("type",type);send("/api/office",d,document.getElementById(s))}
+function media(type,id,s){let f=document.getElementById(id).files[0];if(!f)return alert("فایل وټاکئ");let d=new FormData();d.append("file",f);d.append("type",type);send("/api/media",d,document.getElementById(s))}
+function imageConvert(){let f=im.files[0];if(!f)return alert("عکس وټاکئ");let d=new FormData();d.append("file",f);d.append("format",ifm=document.getElementById("if").value);d.append("quality",iq.value);send("/api/image",d,ims)}
+function merge(){let fs=mg.files;if(!fs.length)return alert("PDF فایلونه وټاکئ");let d=new FormData();[...fs].forEach(f=>d.append("files",f));send("/api/merge-pdf",d,mgs)}
+function doOCR(){let f=ocr.files[0];if(!f)return alert("فایل وټاکئ");let d=new FormData();d.append("file",f);d.append("lang",lang.value);send("/api/ocr",d,ocrs)}
+</script></body></html>
